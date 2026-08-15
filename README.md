@@ -70,7 +70,9 @@ Create a `.env` file in the project root:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
-.gitignore
+```
+##  gitignore
+```
 .env
 venv/
 __pycache__/
