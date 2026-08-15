@@ -2,7 +2,6 @@ import os
 import chromadb
 from google import genai
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from flask import Flask, render_template, request, jsonify
@@ -12,9 +11,7 @@ app = Flask(__name__)
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
-embedding_model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
+
 chroma_client = chromadb.Client()
 collection = chroma_client.get_or_create_collection(
     name="svr_college_documents"
@@ -36,9 +33,15 @@ splitter = RecursiveCharacterTextSplitter(
 chunks = splitter.split_text(document)
 print("PDF loaded successfully.")
 print("Number of chunks:", len(chunks))
-embeddings = embedding_model.encode(
-    chunks
-).tolist()
+embeddings = []
+
+for chunk in chunks:
+    result = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=chunk
+    )
+    embeddings.append(result.embeddings[0].values)
+    
 collection.add(
     ids=[
         str(i)
@@ -94,9 +97,12 @@ User question:
     search_query = rewrite_response.text.strip()
     print("Original question:", question)
     print("Search query:", search_query)
-    query_embedding = embedding_model.encode(
-        search_query
-    ).tolist()
+    result = client.models.embed_content(
+    model="gemini-embedding-001",
+    contents=search_query
+)
+
+    query_embedding = result.embeddings[0].values
     results = collection.query(
         query_embeddings=[
             query_embedding
