@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <title>SVR College AI Assistant</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <h1>SVR Engineering College</h1>
+            <p>AI Assistant</p>
+        </div>
+        <div id="chat-box" class="chat-box">
+            <div id="welcome" class="welcome-message">
+                <h2>Ask Anything About SVR Engineering College</h2>
+                <p class="wait-text">Please wait while the AI processes your question.</p>
+            </div>
+        </div>
+        <div class="input-area">
+            <input
+                type="text"
+                id="question"
+                placeholder="Ask something about the college...">
+            <button onclick="askQuestion()">
+                Ask AI
+            </button>
+        </div>
+    </div>
+
+    <script>
+        async function askQuestion() {
+            const input =
+                document.getElementById("question");
+            const question =
+                input.value.trim();
+            if (!question) {
+                return;
+           }
+            const welcome =
+                document.getElementById("welcome");
+            if (welcome) {
+                welcome.remove();
+            }
+            addMessage(question, "user");
+            input.value = "";
+            const loading =
+                addMessage(
+                    "⏳ Please wait while the AI processes your question...",
+                    "ai"
+                );
+            try {
+                const response =
+                    await fetch("/ask", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            question: question
+                        })
+                    });
+                const data =
+                    await response.json();
+                loading.remove();
+                addMessage(
+                    data.answer,
+                    "ai"
+                );
+            } catch (error) {
+                loading.remove();
+                addMessage(
+                    "Something went wrong. Please try again.",
+                    "ai"
+                );
+            }
+        }
+        function addMessage(message, sender) {
+            const chatBox =
+                document.getElementById("chat-box");
+            const messageDiv =
+                document.createElement("div");
+            messageDiv.classList.add(
+                "message",
+                sender
+            );
+            messageDiv.textContent =
+                message;
+            chatBox.appendChild(
+                messageDiv
+            );
+            chatBox.scrollTop =
+                chatBox.scrollHeight;
+            return messageDiv;
+        }
+        document
+            .getElementById("question")
+            .addEventListener(
+                "keydown",
+                function(event) {
+                    if (event.key === "Enter") {
+                        askQuestion();
+                    }
+                }
+            );
+    </script>
+</body>
+</html>

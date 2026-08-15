@@ -1,0 +1,7 @@
+chromadb
+sentence-transformers
+openai
+pypdf
+langchain-text-splitters
+python-dotenv
+flask
