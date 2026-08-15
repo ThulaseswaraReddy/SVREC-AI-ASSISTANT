@@ -3,9 +3,9 @@
 A **Retrieval-Augmented Generation (RAG) based AI chatbot** developed for SVR Engineering College.
 The chatbot allows users to ask questions about the college and provides answers by retrieving relevant information from the college PDF using semantic search and Google Gemini.
 
-```
+
 ## Live Demo : [SVREC-AI](https://svrec-ai-assistant.onrender.com)
-```
+
 
 ## 🚀 Features
 ```
