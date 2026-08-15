@@ -1,6 +1,6 @@
 chromadb
 sentence-transformers
-openai
+google-genai
 pypdf
 langchain-text-splitters
 python-dotenv
